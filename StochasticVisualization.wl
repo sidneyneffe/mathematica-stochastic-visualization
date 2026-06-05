@@ -13,6 +13,10 @@ NSamples::usage = "NSamples is an option for SVRejectionPlot and defines the num
 
 SVRejectionPlot::usage = "SVRejectionPlot[f, range, gDistribution, constant, NSamples->500] applies the acception-rejection method for a function f and g (with distribution gDistribution) and constant C."
 
+SVDiscreteMarkovChainSimulation::usage = "SVDiscreteMarkovChainSimulation simulates a Markov chain."
+
+SVRandomWalkSimulation::usage = "SVRandomWalkSimulation simulates a random walk as a Markov chain."
+
 
 Begin["`Private`"]
 
@@ -199,6 +203,256 @@ SVRejectionPlot[function_, range_, gDistribution_, C_, opts: OptionsPattern[]] :
         }]
     }]
 )]
+
+
+(* MARKOV CHAINS *)
+
+analyseStochasticMatrix[matrix_] := Module[{system, positive}, (
+    positive = Function[vector, If[
+        AllTrue[vector, RealValuedNumberQ[#] && # <= 0 &],
+        -vector,
+        vector
+    ]];
+    system = <|
+        #[[1, 1]] -> (
+            MatrixForm @ positive @ N @ Chop @ Normalize[#, Norm[#, 1] &] &
+        )
+        /@
+            #[[;;, 2]] &
+        /@
+            Gather[
+                Thread @ Eigensystem[Transpose[ matrix]],
+                #1[[1]] == #2[[1]] &
+            ]
+    |>;
+    ComplexListPlot[
+        Tooltip[#, system[#]] & /@ Keys[system],
+        PlotRange -> {{-1, 1}, {-1, 1}},
+        AspectRatio -> 1,
+        ImageSize -> 80,
+        Ticks -> False,
+        Prolog -> {Opacity[0.2, LightGray], Disk[{0, 0}, 1]},
+        PlotRangePadding -> 0.05,
+        PlotMarkers -> {Automatic, Small}
+    ]
+)]
+
+analysePeriodicity[matrix_, steps_] := (
+    First
+    /@ Select[#, #[[2]] > 0 &] &
+    /@ Transpose[
+        Thread[
+            {#, Diagonal @ MatrixPower[matrix, #]}
+        ] & /@ Range[steps]
+    ]
+)
+
+graphStochasticMatrix[matrix_, layout_: "SpringEmbedding"] := Module[{periodicity, n}, (
+    periodicity = analysePeriodicity[matrix, 15];
+    AdjacencyGraph[
+        Map[
+            If[# == 0, 0, 1] &,
+            matrix - DiagonalMatrix @ Diagonal[matrix], {2}
+        ],
+        PlotTheme -> "Classic",
+        ImageSize -> 90,
+        AspectRatio -> 1,
+        GraphLayout -> layout,
+        PlotRangePadding -> Scaled[.2],
+        VertexLabels -> Table[
+            i -> Tooltip[
+                i,
+                "Period (15 steps): " <> ToString[
+                    GCD @@ periodicity[[i]]
+                ]
+            ],
+            {i, 1, Length[matrix]}
+        ]
+    ]
+)]
+
+analyseConvergence[matrix_] := Module[{positive, vectors, table}, (
+    positive = Function[vector, If[
+        AllTrue[vector, RealValuedNumberQ[#] && # <= 0 &],
+        -vector,
+        vector
+    ]];
+    vectors = positive @ N @ Chop @ Normalize[#, Norm[#, 1] &] &
+    /@ Select[
+        Thread @ Eigensystem[Transpose[matrix]],
+        #[[1]] == 1 &
+    ][[;;, 2]];
+
+    If[
+        Length[vectors] == 1,
+        table = Table[
+            Norm[
+                Array[
+                    If[# == i, 1, 0] &,
+                    Length[matrix]
+                ] . MatrixPower[matrix, n] - vectors[[1]],
+                1
+            ],
+            {i, 1, Length[matrix]},
+            {n, 1, 30}
+        ];
+        ListPlot[
+            table,
+            Joined -> True,
+            ImageSize -> 100,
+            AspectRatio -> 1,
+            PlotLegends -> Placed[
+                Style[
+                    "\!\(\*FormBox[SubscriptBox[TemplateBox[{\"\\\"\\\\!\\\\(\\\\*SubscriptBox[\\\\(\[Delta]\\\\),\\\\(x\\\\)]\\\\)\\\\!\\\\(\\\\*SuperscriptBox[\\\\(P\\\\),\\\\(n\\\\)]\\\\)-\[Pi]\\\"\"},\n\"Norm\"], \"1\"], TraditionalForm]\)",
+                    "Text",
+                    FontSize -> 12
+                ],
+                {Right, Top}
+            ],
+            PlotRange -> {0, 1},
+            PlotRangePadding -> Scaled[.05],
+            PlotStyle -> Opacity[0.5],
+            Frame -> True,
+            FrameTicks -> {{{0, 0.5, 1}, None}, {{0, 10, 20, 30}, None}}
+        ],
+        Style["Nicht eindeutig", "Text"]
+    ]
+)]
+
+Options[SVDiscreteMarkovChainSimulation] = Join[
+    {
+        ChartLayout -> "Stacked",
+        ChartStyle -> {Black, RGBColor["#3498DB"], Orange, Green},
+        AspectRatio -> 1/5,
+        ImageSize -> 450,
+        PlotLabel -> "Simulation",
+        Axes -> False,
+        PlotRangePadding -> None,
+        BarSpacing -> 0,
+        Frame -> False,
+        ChartBaseStyle -> EdgeForm[None]
+    },
+    Options[BarChart]
+];
+SVDiscreteMarkovChainSimulation[transitionMatrix_, initialValues_, steps_, opts: OptionsPattern[]] := Module[{n = Length[transitionMatrix], step, simulation, counts}, (
+    step = Function[list, RandomChoice[
+        transitionMatrix[[#]] -> Range[n]
+    ] & /@ list];
+
+    simulation = NestList[step, initialValues, steps];
+    counts = Table[Count[r, i], {r, simulation}, {i, Range[n]}];
+    
+    Grid[{
+        {
+            If[n <= 5, Style["t=0", "Text"], ""],
+            Style[
+                OptionValue["PlotLabel"],
+                "Text"
+            ],
+            If[n <= 5, Style["t="<>ToString[steps], "Text"], ""],
+            If[n <= 10, Style["Eigenvalues", "Text"], ""],
+            If[n <= 8, Style["Graph", "Text"], ""],
+            Style["Convergence", "Text"]
+        },
+        {
+            If[
+                n <= 5,
+                MatrixForm @ Chop @ N[1 / Length[initialValues] * Table[
+                    Count[initialValues, n],
+                    {n, Range[n]}
+                ]],
+                ""
+            ],
+            BarChart[
+                counts,
+                PlotLabel -> "",
+                Evaluate[FilterRules[{opts, Options[SVDiscreteMarkovChainSimulation]}, Options[BarChart]]]
+            ],
+            If[
+                n <= 5,
+                MatrixForm @ Chop @ N[1 / Length[initialValues] * Table[
+                    Count[initialValues, n],
+                    {n, Range[n]}
+                ] . MatrixPower[transitionMatrix, steps]],
+                ""
+            ],
+            If[
+                n <= 10,
+                analyseStochasticMatrix[transitionMatrix],
+                ""
+            ],
+            If[
+                n <= 8,
+                graphStochasticMatrix[transitionMatrix],
+                ""
+            ],
+            analyseConvergence[transitionMatrix]
+        }
+    }]
+)]
+
+randomWalkMatrix[n_, a_] := Normal[
+    SparseArray[
+        {
+            {1, 1} | {n, n} -> 1 - a,
+            {i_, i_} -> 1 - 2 a,
+            {i_, j_} /; Abs[i - j] == 1 -> a
+        },
+        {n, n}
+    ]
+]
+
+Options[SVRandomWalkSimulation] = Join[
+    {
+        ChartLayout -> "Stacked",
+        AspectRatio -> 1/5,
+        ImageSize -> 450,
+        PlotLabel -> "Simulation",
+        Axes -> False,
+        PlotRangePadding -> None,
+        BarSpacing -> 0,
+        Frame -> False,
+        ChartBaseStyle -> EdgeForm[None]
+    },
+    Options[BarChart]
+];
+SVRandomWalkSimulation[n_, p_, initialValues_, steps_, opts: OptionsPattern[]] := Module[{transitionMatrix, step, simulation, counts, colors}, (
+    transitionMatrix = randomWalkMatrix[n, p];
+    step = Function[list, RandomChoice[
+        transitionMatrix[[#]] -> Range[n]
+    ] & /@ list];
+
+    simulation = NestList[step, initialValues, steps];
+    counts = Table[Count[r, i], {r, simulation}, {i, Range[n]}];
+
+    colors = ColorData["SolarColors"][(# - 1) / n] & /@ Range[n];
+    
+    Grid[{
+        {
+            Style[
+                OptionValue["PlotLabel"],
+                "Text"
+            ],
+            Style["Transition Matrix", "Text"]
+        },
+        {
+            BarChart[
+                counts,
+                PlotLabel -> "",
+                ChartStyle -> colors,
+                Evaluate[FilterRules[{opts, Options[SVDiscreteMarkovChainSimulation]}, Options[BarChart]]]
+            ],
+            MatrixForm[{
+                {1 - p, p, 0, "\[Ellipsis]", 0, 0},
+                {p, 1 - 2 p, p, "\[Ellipsis]", 0, 0},
+                {0, p, 1 - 2 p, "\[Ellipsis]", 0, 0},
+                {"\[Ellipsis]", "\[Ellipsis]", "\[Ellipsis]", "\[Ellipsis]", "\[Ellipsis]", "\[Ellipsis]"} ,
+                {0, 0, 0, "\[Ellipsis]", p, 1 - p}
+            }]
+        }
+    }]
+)]
+
 
 
 End[]
