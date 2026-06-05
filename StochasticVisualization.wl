@@ -9,6 +9,10 @@ SVQuantilePlot::usage = "SVQuantilePlot[{d1, d2, ...}] plots CDF and Quantile-Qu
 
 SVQuantilePlot3D::usage = "SVQuantilePlot3D[distX, distY, distZ, QQDomain->{-30, 30}] shows a 3D plot of three distributions with the specified parameter range."
 
+NSamples::usage = "NSamples is an option for SVRejectionPlot and defines the number of samples"
+
+SVRejectionPlot::usage = "SVRejectionPlot[f, range, gDistribution, constant, NSamples->500] applies the acception-rejection method for a function f and g (with distribution gDistribution) and constant C."
+
 
 Begin["`Private`"]
 
@@ -121,6 +125,80 @@ SVQuantilePlot3D[distX_, distY_, distZ_, opts: OptionsPattern[]] := (
         Evaluate[FilterRules[{opts, Options[SVQuantilePlot3D]}, Options[ParametricPlot3D]]]
     ]
 )
+
+Options[SVRejectionPlot] = {
+    PlotStyle -> RGBColor["#3498DB"],
+    NSamples -> 500
+};
+SVRejectionPlot[function_, range_, gDistribution_, C_, opts: OptionsPattern[]] := Module[{X, y, u, g, ratio, selection}, (
+    f = function;
+    g = PDF[gDistribution];
+    n = OptionValue["NSamples"];
+    (* y = InverseCDF[gDistribution, RandomReal[{0, 1}, n]]; *)
+    y = RandomVariate[gDistribution, n];
+    u = RandomReal[{0, 1}, n];
+    selection = {
+        Select[
+            Thread[{y, u}],
+            #[[2]] <= (f /. (range[[1]] -> #[[1]])) / C / g[#[[1]]] &
+        ],
+        Select[
+            Thread[{y, u}],
+            #[[2]] > (f /. (range[[1]] -> #[[1]])) / C / g[#[[1]]] &
+        ]
+    };
+    
+    X = First /@ selection[[1]];
+    ratio = 1/C * NIntegrate[
+        f /. range[[1]] -> t,
+        {t, -\[Infinity], \[Infinity]}
+    ];
+
+    Column[{
+        Plot[
+            Evaluate @ {f, C g[range[[1]]]},
+            range,
+            ImageSize -> 200,
+            Axes -> {True, False},
+            AspectRatio -> 1/2,
+            PlotLegends -> Placed[{
+                "\!\(\*FormBox[\(\"\<\>\"\*FractionBox[\"f\", TemplateBox[{\n\"f\"},\n\"Abs\"]]\),TraditionalForm]\)",
+                "C g"
+            }, {Right, Top}],
+            PlotRange -> All,
+            PlotLabel -> "Acception Rate: " <> ToString @ PercentForm[ratio, {\[Infinity], 0}],
+            PlotRangePadding -> 0.1,
+            PlotStyle -> {
+                OptionValue["PlotStyle"],
+                Opacity[0.9, Gray]
+            }
+        ],
+        NumberLinePlot[
+            {X, y},
+            PlotStyle -> {Opacity[0.1, OptionValue["PlotStyle"]], Opacity[0.1, Gray]},
+            ImageSize -> 200,
+            PlotRange -> {range[[2]], range[[3]]},
+            PlotRangePadding -> 0.1
+        ],
+        Show[{
+            Plot[
+                If[f == 0, 1, f / (C g[range[[1]]])],
+                range,
+                PlotStyle -> {Dashed, OptionValue["PlotStyle"]},
+                AspectRatio -> 1/6,
+                ImageSize -> 200,
+                Axes -> {True, False},
+                PlotRange -> {0, 1},
+                PlotRangePadding -> 0.1
+            ],
+            ListPlot[
+                selection,
+                PlotMarkers -> {"•"},
+                PlotStyle -> {Opacity[0.5, OptionValue["PlotStyle"]], Opacity[0.5, Gray]}
+            ]
+        }]
+    }]
+)]
 
 
 End[]
