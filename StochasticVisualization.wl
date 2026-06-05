@@ -17,6 +17,7 @@ SVDiscreteMarkovChainSimulation::usage = "SVDiscreteMarkovChainSimulation simula
 
 SVRandomWalkSimulation::usage = "SVRandomWalkSimulation simulates a random walk as a Markov chain."
 
+SVDistributionPlot::usage = "SVDistributionPlot plots a distribution (discrete/continuous) and displays additional information."
 
 Begin["`Private`"]
 
@@ -452,6 +453,84 @@ SVRandomWalkSimulation[n_, p_, initialValues_, steps_, opts: OptionsPattern[]] :
         }
     }]
 )]
+
+
+
+(* PROBABILITY DISTRIBUTIONS *)
+
+
+Statistics`Library`DiscreteUnivariateDistributionQ[BinomialDistribution[10, 0.5]]
+
+SVDistributionPlot[distribution_, x_] := Module[{pdf, char, moment,formatTerm}, (
+    pdf = PDF[distribution, x];
+    char = CharacteristicFunction[distribution, x];
+    moment = MomentGeneratingFunction[distribution, x];
+
+    discreteQ = Statistics`Library`DiscreteUnivariateDistributionQ[distribution];
+
+    formatTerm = Function[
+        term,
+        Style[
+            FullSimplify[term, Assumptions -> {x \[Element] Reals}],
+            FontSize -> 10
+        ]
+    ];
+    
+    Grid[{
+        Style[#,"Text"] &
+        /@ {
+            If[discreteQ, "PMF", "PDF"],
+            "",
+            "Char. Func.",
+            "",
+            "Moment gen. Func.",
+            ""
+        },
+        {
+            If[
+                discreteQ,
+                DiscretePlot[
+                    pdf,
+                    {x,-10, 10},
+                    PlotRange -> {{-10, 10}, All},
+                    ImageSize -> 100,
+                    PlotRangePadding -> Scaled[.05],
+                    Axes -> {True, False},
+                    ExtentSize -> 1/2
+                ],
+                Plot[
+                    pdf,
+                    {x,-8, 8},
+                    PlotRange -> {{-10, 10}, All},
+                    ImageSize -> 100,
+                    PlotRangePadding -> Scaled[.1],
+                    Axes -> {True, False},
+                    Filling -> Axis
+                ],
+            ],
+            formatTerm[pdf],
+            AbsArgPlot[
+                char,
+                {x,-8, 8},
+                PlotRange -> All,
+                ImageSize -> 100,
+                Ticks -> {True, False}
+            ],
+            formatTerm[char],
+            LogPlot[
+                moment,
+                {x,-2, 2},
+                PlotRange -> All,
+                ImageSize -> 100,
+                Ticks -> {True, False}
+            ],
+            formatTerm[moment]
+        }
+    }]
+)]
+
+
+
 
 
 

@@ -17,8 +17,69 @@ Then the functions (all with the prefix `SV`, like in `SVRandomWalkSimulation`) 
 ### Installation
 A compiled `paclet` file can be build from the `wl` source with `PacletBuild`.
 
+## 1. Probability Distributions
 
-## 1. Assessing Random Number Generation
+### SVDistributionPlot
+
+Plots the PDF/PMF, characteristic function (arg-abs plot) and moment-generating function for a given distribution with discrete or continuous domain.
+
+```mathematica
+SVDistributionPlot[PoissonDistribution[5], x]
+```
+<img src="docs/sv-distribution-plot.jpg" height=100>
+
+```mathematica
+SVDistributionPlot[NormalDistribution[], x]
+```
+<img src="docs/sv-distribution-plot-1.jpg" height=100>
+
+
+
+## 2. Markov Chains
+
+### SVDiscreteMarkovChainSimulation
+
+Simulates the path of a discrete Markov chain (defined by a matrix $P$ of transition probabilities and initial values) and visualizes the eigenvalues of $P$, a graph of possible transitions, and the convergence to a stationary distribution.
+
+```mathematica
+SVDiscreteMarkovChainSimulation[0.1 {
+    {5, 5, 0},
+    {3, 6, 1},
+    {0, 1, 9}
+}, Array[1 &, 50], 250, PlotLabel -> "Irreducible and aperiodic"]
+```
+<img src="docs/sv-discrete-markov-chain-simulation.jpg" height=100>
+
+```mathematica
+colors = ColorData["SolarColors"][(# - 1)/3] & /@ Range[3];
+SVDiscreteMarkovChainSimulation[{
+    {0.9, 0.05, 0.05},
+    {0, 0, 1},
+    {0, 1, 0}},
+Array[1 &, 100], 50, ChartStyle -> colors, 
+ PlotLabel -> "Reducible and 2-periodic"]
+```
+<img src="docs/sv-discrete-markov-chain-simulation-1.jpg" height=100>
+
+
+### SVRandomWalkSimulation
+
+Simulates the path of a discrete Markov chain with a random walk transition matrix.
+
+```mathematica
+SVRandomWalkSimulation[6, 0.2, Array[1 &, 100], 100]
+```
+<img src="docs/sv-random-walk-simulation.jpg" height=100>
+
+```mathematica
+SVRandomWalkSimulation[30, 0.25, Array[15 &, 100], 200]
+```
+<img src="docs/sv-random-walk-simulation-1.jpg"  height=100>
+
+
+
+
+## 3. Assessing Random Number Generation
 
 ### SVQuantilePlot
 
@@ -70,46 +131,3 @@ SVRejectionPlot[
 ]
 ```
 <img src="docs/sv-rejection-plot.jpg" width=200>
-
-
-## 2. Markov Chains
-
-### SVDiscreteMarkovChainSimulation
-
-Simulates the path of a discrete Markov chain (defined by a matrix $P$ of transition probabilities and initial values) and visualizes the eigenvalues of $P$, a graph of possible transitions, and the convergence to a stationary distribution.
-
-```mathematica
-SVDiscreteMarkovChainSimulation[0.1 {
-    {5, 5, 0},
-    {3, 6, 1},
-    {0, 1, 9}
-}, Array[1 &, 50], 250, PlotLabel -> "Irreducible and aperiodic"]
-```
-<img src="docs/sv-discrete-markov-chain-simulation.jpg" height=100>
-
-```mathematica
-colors = ColorData["SolarColors"][(# - 1)/3] & /@ Range[3];
-SVDiscreteMarkovChainSimulation[{
-    {0.9, 0.05, 0.05},
-    {0, 0, 1},
-    {0, 1, 0}},
-Array[1 &, 100], 50, ChartStyle -> colors, 
- PlotLabel -> "Reducible and 2-periodic"]
-```
-<img src="docs/sv-discrete-markov-chain-simulation-1.jpg" height=100>
-
-
-### SVRandomWalkSimulation
-
-Simulates the path of a discrete Markov chain with a random walk transition matrix.
-
-```mathematica
-SVRandomWalkSimulation[6, 0.2, Array[1 &, 100], 100]
-```
-<img src="docs/sv-random-walk-simulation.jpg" height=100>
-
-```mathematica
-SVRandomWalkSimulation[30, 0.25, Array[15 &, 100], 200]
-```
-<img src="docs/sv-random-walk-simulation-1.jpg"  height=100>
-

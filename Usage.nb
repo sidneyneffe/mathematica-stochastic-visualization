@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     10021,        260]
-NotebookOptionsPosition[      8131,        222]
-NotebookOutlinePosition[      8622,        240]
-CellTagsIndexPosition[      8579,        237]
+NotebookDataLength[     11320,        293]
+NotebookOptionsPosition[      9115,        250]
+NotebookOutlinePosition[      9606,        268]
+CellTagsIndexPosition[      9563,        265]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -48,7 +48,7 @@ ee64b43abd9e"],
 Cell[BoxData[
  RowBox[{"Quit", "[", "]"}]], "Input",
  CellChangeTimes->{3.989655734598638*^9},
- CellLabel->"In[7]:=",ExpressionUUID->"86972633-5b5d-4f47-874b-3b6950432c9e"],
+ CellLabel->"In[35]:=",ExpressionUUID->"86972633-5b5d-4f47-874b-3b6950432c9e"],
 
 Cell[BoxData[{
  RowBox[{
@@ -60,82 +60,34 @@ Cell[BoxData[{
    3.989655401054777*^9, 3.989655416288505*^9}, {3.989655697241673*^9, 
    3.989655697750101*^9}, {3.989655733250121*^9, 3.9896557502331543`*^9}, {
    3.989659166155569*^9, 3.989659166365703*^9}, 3.9896615186955442`*^9},
- CellLabel->"In[29]:=",ExpressionUUID->"c9469220-03a3-41c6-8568-8585440155b0"],
+ EmphasizeSyntaxErrors->True,
+ CellLabel->"In[27]:=",ExpressionUUID->"c9469220-03a3-41c6-8568-8585440155b0"],
 
 Cell[CellGroupData[{
 
-Cell["Assessing Random Number Generation", "Subsection",
- CellChangeTimes->{{3.989670740350314*^9, 
-  3.989670759434552*^9}},ExpressionUUID->"518291f8-558d-45b1-b945-\
-0261e9d85b3e"],
+Cell["Probability Distributions", "Subsection",
+ CellChangeTimes->{{3.989676271541996*^9, 
+  3.989676278257367*^9}},ExpressionUUID->"d41fef5a-c9eb-4b64-85f4-\
+395cd8e29a9a"],
 
 Cell[BoxData[
- RowBox[{"SVQuantilePlot", "[", 
+ RowBox[{"SVDistributionPlot", "[", 
   RowBox[{
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"NormalDistribution", "[", "]"}], ",", 
-     RowBox[{"CauchyDistribution", "[", 
-      RowBox[{"0", ",", "1"}], "]"}], ",", 
-     RowBox[{"StudentTDistribution", "[", "2", "]"}]}], "}"}], ",", 
-   RowBox[{"CDFDomain", "->", 
-    RowBox[{"{", 
-     RowBox[{
-      RowBox[{"-", "3"}], ",", "3"}], "}"}]}]}], "]"}]], "Input",
- CellChangeTimes->{{3.989657659414065*^9, 3.989657681132265*^9}, {
-   3.989658991160877*^9, 3.9896589955634203`*^9}, {3.989659041616761*^9, 
-   3.989659098469352*^9}, {3.989659148726879*^9, 3.9896591814679327`*^9}, {
-   3.989659250644229*^9, 3.989659286626176*^9}, {3.989659322112661*^9, 
-   3.989659335660734*^9}, {3.989659911547324*^9, 3.989659920247075*^9}, 
-   3.989660572067363*^9},
- CellLabel->"In[3]:=",ExpressionUUID->"86c33a92-aaa7-4cc9-8fda-b33e9f0f794f"],
+   RowBox[{"PoissonDistribution", "[", "5", "]"}], ",", " ", "x"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.9896770839942417`*^9, 3.9896770986752996`*^9}, {
+  3.98967721529324*^9, 3.989677222119239*^9}},
+ CellLabel->"In[24]:=",ExpressionUUID->"a71c0bda-f798-4b93-a499-410e8c569755"],
 
 Cell[BoxData[
- RowBox[{"SVQuantilePlot3D", "[", 
+ RowBox[{"SVDistributionPlot", "[", 
   RowBox[{
-   RowBox[{"NormalDistribution", "[", "]"}], ",", 
-   RowBox[{"CauchyDistribution", "[", 
-    RowBox[{"0", ",", "1"}], "]"}], ",", 
-   RowBox[{"StudentTDistribution", "[", "2", "]"}], ",", 
-   RowBox[{"ImageSize", "->", "400"}]}], "]"}]], "Input",
- CellChangeTimes->{{3.989660405313723*^9, 3.989660440224227*^9}, {
-   3.989660488852394*^9, 3.989660489430653*^9}, 3.9896612929429283`*^9},
- CellLabel->"In[9]:=",ExpressionUUID->"ad3257df-0224-4399-87b9-3a7b40e16d2f"],
+   RowBox[{"NormalDistribution", "[", "]"}], ",", " ", "x"}], "]"}]], "Input",\
 
-Cell[BoxData[{
- RowBox[{
-  RowBox[{"gDistribution", "=", 
-   RowBox[{"TransformedDistribution", "[", 
-    RowBox[{
-     RowBox[{"1", "+", "X"}], ",", 
-     RowBox[{"X", "\[Distributed]", 
-      RowBox[{"ExponentialDistribution", "[", "1", "]"}]}]}], "]"}]}], 
-  ";"}], "\[IndentingNewLine]", 
- RowBox[{"SVRejectionPlot", "[", 
-  RowBox[{
-   RowBox[{"Piecewise", "[", 
-    RowBox[{"{", 
-     RowBox[{
-      RowBox[{"{", 
-       RowBox[{
-        SuperscriptBox["\[ExponentialE]", 
-         RowBox[{
-          RowBox[{"-", 
-           SuperscriptBox["x", "2"]}], "/", "2"}]], ",", " ", 
-        RowBox[{"1", "<=", "x"}]}], "}"}], ",", 
-      RowBox[{"{", 
-       RowBox[{"0", ",", " ", "True"}], "}"}]}], "}"}], "]"}], ",", 
-   RowBox[{"{", 
-    RowBox[{"x", ",", "0", ",", "5"}], "}"}], ",", "gDistribution", ",", 
-   FractionBox["1", 
-    SqrtBox["\[ExponentialE]"]], ",", 
-   RowBox[{"NSamples", "->", "700"}]}], "]"}]}], "Input",
- CellChangeTimes->{{3.9896629416853313`*^9, 3.989663005468762*^9}, {
-   3.9896630505688467`*^9, 3.9896631823274384`*^9}, {3.989665774229912*^9, 
-   3.9896657869148903`*^9}, 3.989666014635853*^9, {3.989666064515921*^9, 
-   3.989666109005735*^9}, {3.989666327001116*^9, 3.9896663747254257`*^9}, 
-   3.989666653899881*^9},
- CellLabel->"In[37]:=",ExpressionUUID->"d0223c07-0007-40c4-93af-be46606b09c7"]
+ CellChangeTimes->{{3.9896763384946938`*^9, 3.989676342282258*^9}, {
+  3.989677031961349*^9, 3.9896770365248938`*^9}, {3.989677192857952*^9, 
+  3.9896771934541807`*^9}},
+ CellLabel->"In[19]:=",ExpressionUUID->"3264dcd3-adb7-481f-a74f-efba0d1b2e72"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -216,6 +168,82 @@ Cell[BoxData[
      RowBox[{"15", "&"}], ",", "100"}], "]"}], ",", "200"}], "]"}]], "Input",
  CellChangeTimes->{{3.989674067789667*^9, 3.989674105852928*^9}},
  CellLabel->"In[36]:=",ExpressionUUID->"541e14aa-3075-4bc4-8682-5b3c1e7f19ce"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Assessing Random Number Generation", "Subsection",
+ CellChangeTimes->{{3.989670740350314*^9, 
+  3.989670759434552*^9}},ExpressionUUID->"56e8362b-da8c-44ef-bf88-\
+0889948d2805"],
+
+Cell[BoxData[
+ RowBox[{"SVQuantilePlot", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", "]"}], ",", 
+     RowBox[{"CauchyDistribution", "[", 
+      RowBox[{"0", ",", "1"}], "]"}], ",", 
+     RowBox[{"StudentTDistribution", "[", "2", "]"}]}], "}"}], ",", 
+   RowBox[{"CDFDomain", "->", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"-", "3"}], ",", "3"}], "}"}]}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.989657659414065*^9, 3.989657681132265*^9}, {
+   3.989658991160877*^9, 3.9896589955634203`*^9}, {3.989659041616761*^9, 
+   3.989659098469352*^9}, {3.989659148726879*^9, 3.9896591814679327`*^9}, {
+   3.989659250644229*^9, 3.989659286626176*^9}, {3.989659322112661*^9, 
+   3.989659335660734*^9}, {3.989659911547324*^9, 3.989659920247075*^9}, 
+   3.989660572067363*^9},
+ CellLabel->"In[3]:=",ExpressionUUID->"6ec942b7-16c9-4329-944f-4d503d0ed33e"],
+
+Cell[BoxData[
+ RowBox[{"SVQuantilePlot3D", "[", 
+  RowBox[{
+   RowBox[{"NormalDistribution", "[", "]"}], ",", 
+   RowBox[{"CauchyDistribution", "[", 
+    RowBox[{"0", ",", "1"}], "]"}], ",", 
+   RowBox[{"StudentTDistribution", "[", "2", "]"}], ",", 
+   RowBox[{"ImageSize", "->", "400"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.989660405313723*^9, 3.989660440224227*^9}, {
+   3.989660488852394*^9, 3.989660489430653*^9}, 3.9896612929429283`*^9},
+ CellLabel->"In[9]:=",ExpressionUUID->"ebb30b0f-9996-4f15-8f39-2a5d7e5af2c5"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"gDistribution", "=", 
+   RowBox[{"TransformedDistribution", "[", 
+    RowBox[{
+     RowBox[{"1", "+", "X"}], ",", 
+     RowBox[{"X", "\[Distributed]", 
+      RowBox[{"ExponentialDistribution", "[", "1", "]"}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"SVRejectionPlot", "[", 
+  RowBox[{
+   RowBox[{"Piecewise", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        SuperscriptBox["\[ExponentialE]", 
+         RowBox[{
+          RowBox[{"-", 
+           SuperscriptBox["x", "2"]}], "/", "2"}]], ",", " ", 
+        RowBox[{"1", "<=", "x"}]}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", " ", "True"}], "}"}]}], "}"}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"x", ",", "0", ",", "5"}], "}"}], ",", "gDistribution", ",", 
+   FractionBox["1", 
+    SqrtBox["\[ExponentialE]"]], ",", 
+   RowBox[{"NSamples", "->", "700"}]}], "]"}]}], "Input",
+ CellChangeTimes->{{3.9896629416853313`*^9, 3.989663005468762*^9}, {
+   3.9896630505688467`*^9, 3.9896631823274384`*^9}, {3.989665774229912*^9, 
+   3.9896657869148903`*^9}, 3.989666014635853*^9, {3.989666064515921*^9, 
+   3.989666109005735*^9}, {3.989666327001116*^9, 3.9896663747254257`*^9}, 
+   3.989666653899881*^9},
+ CellLabel->"In[37]:=",ExpressionUUID->"4af64f63-1257-4c5b-9879-3c0fa5d0eb0c"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
@@ -245,20 +273,25 @@ Cell[781, 28, 229, 4, 33, "Subtitle",ExpressionUUID->"18a8ded4-3643-4eea-b7f5-e5
 Cell[1013, 34, 156, 3, 40, "Author",ExpressionUUID->"a4a3a43f-5bd9-4f1e-a242-a37515f25a9c"],
 Cell[CellGroupData[{
 Cell[1194, 41, 205, 4, 69, "Section",ExpressionUUID->"a70d73d0-63ab-4a97-af13-ee64b43abd9e"],
-Cell[1402, 47, 172, 3, 41, "Input",ExpressionUUID->"86972633-5b5d-4f47-874b-3b6950432c9e"],
-Cell[1577, 52, 585, 10, 63, "Input",ExpressionUUID->"c9469220-03a3-41c6-8568-8585440155b0"],
+Cell[1402, 47, 173, 3, 41, "Input",ExpressionUUID->"86972633-5b5d-4f47-874b-3b6950432c9e"],
+Cell[1578, 52, 615, 11, 63, "Input",ExpressionUUID->"c9469220-03a3-41c6-8568-8585440155b0"],
 Cell[CellGroupData[{
-Cell[2187, 66, 182, 3, 34, "Subsection",ExpressionUUID->"518291f8-558d-45b1-b945-0261e9d85b3e"],
-Cell[2372, 71, 889, 19, 41, "Input",ExpressionUUID->"86c33a92-aaa7-4cc9-8fda-b33e9f0f794f"],
-Cell[3264, 92, 525, 10, 41, "Input",ExpressionUUID->"ad3257df-0224-4399-87b9-3a7b40e16d2f"],
-Cell[3792, 104, 1329, 33, 87, "Input",ExpressionUUID->"d0223c07-0007-40c4-93af-be46606b09c7"]
+Cell[2218, 67, 173, 3, 34, "Subsection",ExpressionUUID->"d41fef5a-c9eb-4b64-85f4-395cd8e29a9a"],
+Cell[2394, 72, 346, 7, 41, "Input",ExpressionUUID->"a71c0bda-f798-4b93-a499-410e8c569755"],
+Cell[2743, 81, 391, 8, 41, "Input",ExpressionUUID->"3264dcd3-adb7-481f-a74f-efba0d1b2e72"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[5158, 142, 161, 3, 34, "Subsection",ExpressionUUID->"0b8847b4-a9f5-4833-b953-0eb3b40e4a6a"],
-Cell[5322, 147, 856, 19, 72, "Input",ExpressionUUID->"e05ca6a4-8043-4017-a45c-db81354ab470"],
-Cell[6181, 168, 1157, 30, 84, "Input",ExpressionUUID->"6cfd25ea-1de6-48e5-9a4b-65ef85c9eed9"],
-Cell[7341, 200, 396, 8, 41, "Input",ExpressionUUID->"efcd4c03-c6b8-4431-a169-75a384a6d5cc"],
-Cell[7740, 210, 351, 7, 41, "Input",ExpressionUUID->"541e14aa-3075-4bc4-8682-5b3c1e7f19ce"]
+Cell[3171, 94, 161, 3, 34, "Subsection",ExpressionUUID->"0b8847b4-a9f5-4833-b953-0eb3b40e4a6a"],
+Cell[3335, 99, 856, 19, 72, "Input",ExpressionUUID->"e05ca6a4-8043-4017-a45c-db81354ab470"],
+Cell[4194, 120, 1157, 30, 84, "Input",ExpressionUUID->"6cfd25ea-1de6-48e5-9a4b-65ef85c9eed9"],
+Cell[5354, 152, 396, 8, 41, "Input",ExpressionUUID->"efcd4c03-c6b8-4431-a169-75a384a6d5cc"],
+Cell[5753, 162, 351, 7, 41, "Input",ExpressionUUID->"541e14aa-3075-4bc4-8682-5b3c1e7f19ce"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6141, 174, 182, 3, 34, "Subsection",ExpressionUUID->"56e8362b-da8c-44ef-bf88-0889948d2805"],
+Cell[6326, 179, 889, 19, 41, "Input",ExpressionUUID->"6ec942b7-16c9-4329-944f-4d503d0ed33e"],
+Cell[7218, 200, 525, 10, 41, "Input",ExpressionUUID->"ebb30b0f-9996-4f15-8f39-2a5d7e5af2c5"],
+Cell[7746, 212, 1329, 33, 87, "Input",ExpressionUUID->"4af64f63-1257-4c5b-9879-3c0fa5d0eb0c"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
