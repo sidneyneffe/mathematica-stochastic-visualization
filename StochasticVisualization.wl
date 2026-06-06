@@ -17,7 +17,11 @@ SVDiscreteMarkovChainSimulation::usage = "SVDiscreteMarkovChainSimulation simula
 
 SVRandomWalkSimulation::usage = "SVRandomWalkSimulation simulates a random walk as a Markov chain."
 
-SVDistributionPlot::usage = "SVDistributionPlot plots a distribution (discrete/continuous) and displays additional information."
+SVDistributionPlot::usage = "SVDistributionPlot[distribution, x] plots a distribution (discrete/continuous) and displays additional information."
+
+SVBiDistributionPlot::usage = "SVDistributionPlot[distribution] plots a two-dimensional distribution and the marginal distributions."
+
+SVConditionalBiNormalPlot::usage = "SVConditionalBiNormalPlot[mean, varianceMatrix, yCondition] plots a conditional two-dimensional normal distribution."
 
 Begin["`Private`"]
 
@@ -458,9 +462,6 @@ SVRandomWalkSimulation[n_, p_, initialValues_, steps_, opts: OptionsPattern[]] :
 
 (* PROBABILITY DISTRIBUTIONS *)
 
-
-Statistics`Library`DiscreteUnivariateDistributionQ[BinomialDistribution[10, 0.5]]
-
 SVDistributionPlot[distribution_, x_] := Module[{pdf, char, moment,formatTerm}, (
     pdf = PDF[distribution, x];
     char = CharacteristicFunction[distribution, x];
@@ -506,7 +507,7 @@ SVDistributionPlot[distribution_, x_] := Module[{pdf, char, moment,formatTerm}, 
                     PlotRangePadding -> Scaled[.1],
                     Axes -> {True, False},
                     Filling -> Axis
-                ],
+                ]
             ],
             formatTerm[pdf],
             AbsArgPlot[
@@ -529,10 +530,149 @@ SVDistributionPlot[distribution_, x_] := Module[{pdf, char, moment,formatTerm}, 
     }]
 )]
 
+Options[SVBiDistributionPlot] = Join[
+   {
+        ImageSize -> 200,
+        PlotRange -> {{-4, 4}, {-4, 4}},
+        PlotPoints -> 50,
+        ColorFunction -> "GrayYellowTones",
+        Axes -> False,
+        FrameTicks -> False,
+        PlotRangePadding -> 0
+    },
+   Options[DensityPlot]
+];
+SVBiDistributionPlot[distribution_, opts: OptionsPattern[]] := Module[{pdfX, pdfY, pdfXY, ranges, colorFunction}, (
+    pdfXY = PDF[distribution];
+    pdfX = PDF[MarginalDistribution[distribution, 1]];
+    pdfY = PDF[MarginalDistribution[distribution, 2]];
+    ranges = OptionValue["PlotRange"];
+    colorFunction = If[
+        StringQ[OptionValue["ColorFunction"]],
+        ColorData[OptionValue["ColorFunction"]],
+        OptionValue["ColorFunction"]
+    ];
+    
+    Grid[{
+        {
+            "",
+            ParametricPlot[
+                {t, u * pdfX[t]},
+                {t, ranges[[1, 1]], ranges[[1, 2]]},
+                {u, 0, 1},
+                ImageSize -> OptionValue["ImageSize"],
+                AspectRatio -> 1/6,
+                PlotPoints -> 30,
+                Axes -> False,
+                Frame -> False,
+                PlotRange -> {ranges[[1]], {0, All}},
+                PlotRangePadding -> {0, Scaled[.1]},
+                ColorFunction -> (colorFunction[#2] &)
+            ]
+        },
+        {
+            ParametricPlot[
+                {-u * pdfY[t], t},
+                {t, ranges[[2, 1]], ranges[[2, 2]]},
+                {u, 0, 1},
+                ImageSize -> OptionValue["ImageSize"] / 6,
+                AspectRatio -> 6,
+                Axes -> False,
+                Frame -> False,
+                PlotRange -> {{All, 0}, ranges[[2]]},
+                PlotRangePadding -> {Scaled[.1], 0},
+                ColorFunction -> (colorFunction[1-#1] &)
+            ],
+            DensityPlot[
+                pdfXY[{t1, t2}],
+                {t1, ranges[[1, 1]], ranges[[1, 2]]},
+                {t2, ranges[[2, 1]], ranges[[2, 2]]},
+                Evaluate @ FilterRules[
+                    {opts, Options[SVBiDistributionPlot]},
+                    Options[DensityPlot]
+                ]
+            ]
+        }
+    }]
+)]
 
+Options[SVConditionalBiNormalPlot] = Join[
+   {
+        ImageSize -> 200,
+        PlotRange -> {{-4, 4}, {-4, 4}},
+        PlotPoints -> 50,
+        ColorFunction -> "GrayYellowTones",
+        Axes -> False,
+        FrameTicks -> False,
+        PlotRangePadding -> 0
+    },
+   Options[DensityPlot]
+];
+SVConditionalBiNormalPlot[mean_, varianceMatrix_, yCondition_, opts: OptionsPattern[]] := Module[{dist, ranges, colorFunction, distPlot}, (
+    dist = MultinormalDistribution[mean, varianceMatrix];
+    ranges = OptionValue["PlotRange"];
+    colorFunction = If[
+        StringQ[OptionValue["ColorFunction"]],
+        ColorData[OptionValue["ColorFunction"]],
+        OptionValue["ColorFunction"]
+    ];
 
+    distPlot = Identity @@ SVBiDistributionPlot[
+        dist,
+        Epilog -> {
+            Dashed,
+            White,
+            Line[{
+                {ranges[[1, 1]], yCondition},
+                {ranges[[1, 2]], yCondition}
+            }]
+        },
+        FilterRules[
+            {opts, Options[SVConditionalBiNormalPlot]},
+            Options[SVBiDistributionPlot]
+        ]
+    ];
 
+    conditionalMean = mean[[1]] + varianceMatrix[[1, 2]]/varianceMatrix[[2, 2]] (yCondition - mean[[2]]);
 
+    conditionalVariance = varianceMatrix[[1, 1]] - varianceMatrix[[1, 2]]^2 / varianceMatrix[[2, 2]];
+
+    conditionalDistribution = NormalDistribution[conditionalMean, conditionalVariance];
+
+    conditionalPlot = ParametricPlot[
+        {t, u * Evaluate@PDF[conditionalDistribution, t]},
+        {t, ranges[[1, 1]], ranges[[1, 2]]},
+        {u, 0, 1},
+        ImageSize -> OptionValue["ImageSize"],
+        AspectRatio -> 1,
+        PlotPoints -> 30,
+        Axes -> {True, False},
+        Frame -> False,
+        PlotRange -> All,
+        PlotRangePadding -> {0, Scaled[.1]},
+        ColorFunction -> (colorFunction[#2] &),
+        PlotLabel -> Row[{
+            "\[ScriptCapitalN](",
+            NumberForm[conditionalMean, {\[Infinity], 1}],
+            ",",
+            NumberForm[Sqrt[conditionalVariance], {\[Infinity], 1}],
+            ")"
+        }]
+    ];
+
+    Grid[{
+        {
+            distPlot[[1, 1]],
+            distPlot[[1, 2]],
+            Style["Condition: y=" <> ToString[yCondition], "Text"]
+        },
+        {
+            distPlot[[2, 1]],
+            distPlot[[2, 2]],
+            conditionalPlot
+        }
+    }]
+)]
 
 End[]
 

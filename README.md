@@ -1,12 +1,13 @@
 # Stochastic Visualization Mathematica Package
-A package for visualizing uncertainty, Markov Chains and Monte-Carlo simulations. It currently provides functionality for:
+A package for visualizing uncertainty, Markov Chains and stochastic simulations. It currently provides functionality for:
 
-- Quantile-Quantile plotting (2d/3d) to assess the quality of random number generation methods
-- Visualizing the acceptance-rejection method
-- Simulating Markov chains
-- Simulating Random Walks
+- Plotting PDF, characteristic function and moment generating function for distributions
+- Plotting joined and marginal PDF for two dimensional distributions and for conditioned normal distributions
+- Simulating Markov chains and Random walks
+- Plotting Quantile-Quantile graphs (in 2d and 3d)
+- Visualizing the acceptance-rejection method (Random number generation)
 
-### Usage
+### Direct Usage
 To use this package, include `StochasticVisualization.wl` in your project's folder and execute:
 ```mathematica
 SetDirectory[NotebookDirectory[]];
@@ -14,8 +15,8 @@ Get["StochasticVisualization`"]
 ```
 Then the functions (all with the prefix `SV`, like in `SVRandomWalkSimulation`) will be accessable directly. The file `Usage.nb` goes into more detail.
 
-### Installation
-A compiled `paclet` file can be build from the `wl` source with `PacletBuild`.
+### Package Usage
+A _paclet_ file can be compiled from the _wl_ source file with `PacletBuild`.
 
 ## 1. Probability Distributions
 
@@ -33,6 +34,31 @@ SVDistributionPlot[NormalDistribution[], x]
 ```
 <img src="docs/sv-distribution-plot-1.jpg" height=100>
 
+
+### SVBiDistributionPlot
+
+Plots the PDFs of a two dimensional distribution and their marginal distributions.
+
+
+```mathematica
+dist = CopulaDistribution[
+    {"Binormal", 0.5},
+    {BetaDistribution[1.5, 2], NormalDistribution[]}
+];
+SVBiDistributionPlot[dist, PlotRange -> {{0, 1}, {-3, 3}}]
+```
+<img src="docs/sv-bi-distribution-plot.jpg" height=250>
+
+
+### SVConditionalBiNormalPlot
+
+Plots the PDFs of a two dimensional normal distribution, their marginal distributions and the conditioned distribution for a specified $y$.
+
+```mathematica
+SVConditionalBiNormalPlot[{2, -1}, {{2, 0.5}, {0.5, 1}}, -1, 
+ ColorFunction -> "BlueGreenYellow"]
+```
+<img src="docs/sv-conditional-bi-normal-plot.jpg" height=250>
 
 
 ## 2. Markov Chains
